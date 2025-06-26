@@ -13,7 +13,7 @@ jsonschema==4.24.0
 jsonschema-specifications==2025.4.1
 MarkupSafe==3.0.2
 narwhals==1.44.0
-numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1749430572634/work/dist/numpy-2.3.0-cp313-cp313-macosx_10_13_x86_64.whl#sha256=55cad72b2d2d2d35d3d23a72f4fd820dcc657ae5748b60d39487f514a14663f2
+numpy==2.3.0
 packaging==25.0
 pandas==2.3.0
 pillow==11.2.1
