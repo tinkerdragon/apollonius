@@ -1,20 +1,19 @@
-
 import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
-from plotly.subplots import make_subplots
+from fractions import Fraction
+import math
 
 # App title and description
 st.title("Apollonius Circle Overlap Plotter")
-st.write("Adjust the sliders to change the input point A and ratio k. The plot shows the overlapping region of Apollonius circles created between point A and a grid of invisible points.")
+st.write("Adjust the sliders to change the input point A. The plot shows the overlapping region of Apollonius circles created between point A and a grid of invisible points. The ratio k is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
 
-# Sliders for coordinates of point A and ratio k
+# Sliders for coordinates of point A
 x_a = st.slider("x_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
 y_a = st.slider("y_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
-k = st.slider("k (Ratio)", min_value=0.1, max_value=5.0, value=1.5, step=0.1)
 
 # Grid density slider
-grid_density = st.slider("Grid Density", min_value=3, max_value=100, value=7, step=1)
+grid_density = st.slider("Grid Density", min_value=3, max_value=20, value=7, step=1)
 
 # Resolution for overlap detection
 resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=100, step=10)
@@ -23,6 +22,20 @@ resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=
 grid_range = 10  # Range of the grid
 x_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
 y_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
+
+# Function to calculate LCM of two numbers
+def lcm(a, b):
+    return (a * b) // math.gcd(a, b) if a > 0 and b > 0 else 0
+
+# Function to get denominator of a float
+def get_denominator(x, max_den=10000):
+    f = Fraction(x).limit_denominator(max_den)
+    return f.denominator
+
+# Compute lcm_a for input point A
+den_x_a = get_denominator(x_a)
+den_y_a = get_denominator(y_a)
+lcm_a = lcm(den_x_a, den_y_a)
 
 # Function to calculate Apollonius circle parameters
 def apollonius_circle(x1, y1, x2, y2, k):
@@ -49,11 +62,6 @@ def apollonius_circle(x1, y1, x2, y2, k):
     
     return ox, oy, r
 
-# Function to check if a point is inside a circle
-def point_in_circle(px, py, cx, cy, r):
-    """Check if point (px, py) is inside circle centered at (cx, cy) with radius r"""
-    return (px - cx)**2 + (py - cy)**2 <= r**2
-
 # Collect all valid Apollonius circles
 apollonius_circles = []
 for xi in x_grid:
@@ -61,7 +69,16 @@ for xi in x_grid:
         # Skip if grid point is too close to input point
         if abs(xi - x_a) < 1e-6 and abs(yi - y_a) < 1e-6:
             continue
-            
+        # Compute lcm_g for the grid point
+        den_x_g = get_denominator(xi)
+        den_y_g = get_denominator(yi)
+        lcm_g = lcm(den_x_g, den_y_g)
+        # Discard circle if lcm_g > lcm_a
+        if lcm_g > lcm_a or lcm_g == 0:
+            continue
+        # Calculate k as lcm_g / lcm_aව
+
+        k = lcm_g / lcm_a
         circle_params = apollonius_circle(x_a, y_a, xi, yi, k)
         if circle_params is not None:
             apollonius_circles.append(circle_params)
@@ -105,12 +122,12 @@ if len(apollonius_circles) > 0:
     X, Y = np.meshgrid(x_mesh, y_mesh)
     
     # Check which mesh points are inside all circles
-    Z = np.ones_like(X, dtype=bool)     # all True to start
+    Z = np.ones_like(X, dtype=bool)  # Start with all True
     for cx, cy, r in apollonius_circles:
         inside = (X - cx)**2 + (Y - cy)**2 <= r**2
-        Z &= inside                     # logical AND on bool arrays
-
-    # For the contour we want numeric values (0/1)
+        Z &= inside  # Logical AND to find overlap
+    
+    # Convert to float for contour plotting
     Z_float = Z.astype(float)
     fig.add_trace(
         go.Contour(
@@ -124,23 +141,7 @@ if len(apollonius_circles) > 0:
         )
     )
     
-    # Add contour for the overlap region
-    fig.add_trace(go.Contour(
-        x=x_mesh,
-        y=y_mesh,
-        z=Z.astype(float),
-        showscale=False,
-        contours=dict(
-            start=0.5,
-            end=1.5,
-            size=1,
-            coloring='fill'
-        ),
-        colorscale=[[0, 'white'], [1, 'lightblue']],
-        name="Overlap Region"
-    ))
-    
-    # Optionally add individual circle outlines (lighter)
+    # Optional: Show individual circles
     if st.checkbox("Show individual Apollonius circles", value=False):
         for i, (cx, cy, r) in enumerate(apollonius_circles):
             theta = np.linspace(0, 2*np.pi, 100)
@@ -185,7 +186,8 @@ fig.update_layout(
 st.plotly_chart(fig)
 
 # Information about the overlap
-st.write(f"**Number of Apollonius circles:** {len(apollonius_circles)}")
+st.write(f"**LCM of input point A denominators:** {lcm_a}")
+st.write(f"**Number of Apollonius circles:**-dot-2">Number of Apollonius circles: {len(apollonius_circles)}")
 if len(apollonius_circles) > 0:
     overlap_count = np.sum(Z)
     total_points = Z.size
