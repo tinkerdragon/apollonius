@@ -9,8 +9,8 @@ st.title("Apollonius Circle Overlap Plotter")
 st.write("Adjust the sliders to change the input point A and grid density. The plot shows the overlapping region of Apollonius circles created between point A and a grid of points (optionally visible). The ratio k for each circle is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
 
 # Sliders for coordinates of point A
-x_a = st.slider("x_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
-y_a = st.slider("y_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
+x_a = st.slider("x_A (Input Point)", min_value=-10.0, max_value=10.0, value=0.0, step=0.001)
+y_a = st.slider("y_A (Input Point)", min_value=-10.0, max_value=10.0, value=0.0, step=0.001)
 
 # Grid density slider
 grid_density = st.slider("Grid Density", min_value=3, max_value=20, value=7, step=1)
@@ -22,7 +22,7 @@ resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=
 show_grid = st.checkbox("Show grid points", value=False)
 
 # Create grid of points
-grid_range = 10  # Range of the grid
+grid_range = 20  # Range of the grid
 x_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
 y_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
 
