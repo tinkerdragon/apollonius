@@ -5,7 +5,7 @@ from fractions import Fraction
 import math
 
 # App title and description
-st.title("Apollonius Circle Overlap Plotter")
+st.title("Apollonius Circle Overlap Plotter brobrobro")
 st.write("Adjust the sliders to change the input point A and grid density. The plot shows the overlapping region of Apollonius circles created between point A and a grid of points (optionally visible). The ratio k for each circle is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
 
 # Sliders for coordinates of point A
