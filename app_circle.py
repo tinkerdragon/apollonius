@@ -6,7 +6,7 @@ import math
 
 # App title and description
 st.title("Apollonius Circle Overlap Plotter")
-st.write("Adjust the sliders to change the input point A. The plot shows the overlapping region of Apollonius circles created between point A and a grid of invisible points. The ratio k is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
+st.write("Adjust the sliders to change the input point A and grid density. The plot shows the overlapping region of Apollonius circles created between point A and a grid of invisible points. The ratio k for each circle is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
 
 # Sliders for coordinates of point A
 x_a = st.slider("x_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
@@ -73,11 +73,10 @@ for xi in x_grid:
         den_x_g = get_denominator(xi)
         den_y_g = get_denominator(yi)
         lcm_g = lcm(den_x_g, den_y_g)
-        # Discard circle if lcm_g > lcm_a
+        # Discard circle if lcm_g > lcm_a or lcm_g is invalid
         if lcm_g > lcm_a or lcm_g == 0:
             continue
-        # Calculate k as lcm_g / lcm_aව
-
+        # Calculate k as lcm_g / lcm_a
         k = lcm_g / lcm_a
         circle_params = apollonius_circle(x_a, y_a, xi, yi, k)
         if circle_params is not None:
@@ -187,7 +186,7 @@ st.plotly_chart(fig)
 
 # Information about the overlap
 st.write(f"**LCM of input point A denominators:** {lcm_a}")
-st.write(f"**Number of Apollonius circles:**-dot-2">Number of Apollonius circles: {len(apollonius_circles)}")
+st.write(f"**Number of Apollonius circles:** {len(apollonius_circles)}")
 if len(apollonius_circles) > 0:
     overlap_count = np.sum(Z)
     total_points = Z.size
