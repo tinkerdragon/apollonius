@@ -13,7 +13,7 @@ x_a = st.slider("x_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, s
 y_a = st.slider("y_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
 
 # Grid density slider
-grid_density = st.slider("Grid Density", min_value=3, max_value=20, value=7, step=1)
+grid_density = st.slider("Grid Density", min_value=3, max_value=100, value=7, step=1)
 
 # Resolution for overlap detection
 resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=100, step=10)
