@@ -6,22 +6,30 @@ import math
 
 # App title and description
 st.title("Apollonius Circle Overlap Plotter")
-st.write("Adjust the sliders to change the input point A and grid density. The plot shows the overlapping region of Apollonius circles created between point A and a grid of invisible points. The ratio k for each circle is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
+st.write("Adjust the sliders to change the input point A and grid density. The plot shows the overlapping region of Apollonius circles created between point A and a grid of points (optionally visible). The ratio k for each circle is computed as lcm_G / lcm_A, where lcm_G is the LCM of the denominators of the grid point coordinates, and lcm_A is that of the input point A. Only grid points with lcm_G <= lcm_A are considered.")
 
 # Sliders for coordinates of point A
 x_a = st.slider("x_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
 y_a = st.slider("y_A (Input Point)", min_value=-5.0, max_value=5.0, value=0.0, step=0.1)
 
 # Grid density slider
-grid_density = st.slider("Grid Density", min_value=3, max_value=100, value=7, step=1)
+grid_density = st.slider("Grid Density", min_value=3, max_value=20, value=7, step=1)
 
 # Resolution for overlap detection
 resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=100, step=10)
+
+# Checkbox to show grid points
+show_grid = st.checkbox("Show grid points", value=False)
 
 # Create grid of points
 grid_range = 10  # Range of the grid
 x_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
 y_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
+
+# Compute all grid points for plotting
+X, Y = np.meshgrid(x_grid, y_grid)
+x_all = X.flatten()
+y_all = Y.flatten()
 
 # Function to calculate LCM of two numbers
 def lcm(a, b):
@@ -95,6 +103,16 @@ fig.add_trace(go.Scatter(
     marker=dict(size=10, color="red"),
     name="Input Point A"
 ))
+
+# Add grid points if checkbox is checked
+if show_grid:
+    fig.add_trace(go.Scatter(
+        x=x_all,
+        y=y_all,
+        mode='markers',
+        marker=dict(size=3, color='gray', opacity=0.5),
+        name='Grid Points'
+    ))
 
 # Find overlapping region using discretization
 if len(apollonius_circles) > 0:
