@@ -51,24 +51,12 @@ def apollonius_circle(x1, y1, x2, y2, k):
     Calculate center and radius of Apollonius circle for points (x1,y1) and (x2,y2) with ratio k
     Returns (center_x, center_y, radius) or None if circle doesn't exist
     """
-    d = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    g = (k**2 * x2 - x1)/(1 - k**2)
+    f = (k**2 * y2 - y1)/(1 - k**2)
+    c = (x1**2 + y1**2 - k**2 * x2**2 - k**2 * y2**2)/(1 - k**2)
     
-    # Special cases
-    if d < 1e-6 or abs(k - 1) < 1e-6:
-        return None
-    
-    # Calculate center
-    denominator = 1 - k**2
-    if abs(denominator) < 1e-6:
-        return None
-        
-    ox = (x1 - k**2 * x2) / denominator
-    oy = (y1 - k**2 * y2) / denominator
-    
-    # Calculate radius
-    r = abs(k * d / denominator)
-    
-    return ox, oy, r
+    r = np.sqrt(g**2 + f**2 - c)
+    return -g, -f, r
 
 # Collect all valid Apollonius circles
 apollonius_circles = []
@@ -209,4 +197,4 @@ if len(apollonius_circles) > 0:
     overlap_count = np.sum(Z)
     total_points = Z.size
     overlap_percentage = (overlap_count / total_points) * 100
-    st.write(f"**Overlap area (approximate):** {overlap_percentage:.1f}% of the checked region")
+    st.write(f"**Overlap area (approximate):** {overlap_percentage:.4f}% of the checked region")
