@@ -184,7 +184,7 @@ fig.update_layout(
     ),
     yaxis=dict(
         showgrid=False,
-    )
+    ),
     yaxis_range=[center_y - half_range, center_y + half_range],
     width=700,
     height=700,
