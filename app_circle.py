@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import numpy as np
 from fractions import Fraction
 import math
+from findFractions import find_simplified_fractions
 
 # App title and description
 st.title("Apollonius Circle Overlap Plotter")
@@ -12,9 +13,6 @@ st.write("Adjust the sliders to change the input point A and grid density. The p
 x_a = st.slider("x_A (Input Point)", min_value=-10.0, max_value=10.0, value=0.0, step=0.1)
 y_a = st.slider("y_A (Input Point)", min_value=-10.0, max_value=10.0, value=0.0, step=0.1)
 
-# Grid density slider
-grid_density = st.slider("Grid Density", min_value=3, max_value=20, value=7, step=1)
-
 # Resolution for overlap detection
 resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=100, step=10)
 
@@ -22,9 +20,10 @@ resolution = st.slider("Overlap Resolution", min_value=50, max_value=200, value=
 show_grid = st.checkbox("Show grid points", value=False)
 
 # Create grid of points
-grid_range = 20  # Range of the grid
-x_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
-y_grid = np.linspace(-grid_range/2, grid_range/2, grid_density)
+fractions = find_simplified_fractions()
+st.markdown(len(fractions))
+x_grid = fractions
+y_grid = fractions
 
 # Compute all grid points for plotting
 X, Y = np.meshgrid(x_grid, y_grid)
@@ -60,8 +59,11 @@ def apollonius_circle(x1, y1, x2, y2, k):
 
 # Collect all valid Apollonius circles
 apollonius_circles = []
+print(x_grid)
 for xi in x_grid:
     for yi in y_grid:
+        print(xi)
+        print(type(xi))
         # Skip if grid point is too close to input point
         if abs(xi - x_a) < 1e-6 and abs(yi - y_a) < 1e-6:
             continue
